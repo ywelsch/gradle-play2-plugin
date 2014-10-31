@@ -1,0 +1,30 @@
+apply plugin: 'com.bmuschko.nexus'
+
+
+modifyPom {
+    project {
+        name 'gradle-play2-plugin'
+        description 'This is a gradle plugin to build play2 projects.'
+        url 'https://github.com/ywelsch/gradle-play2-plugin'
+        inceptionYear '2014'
+        scm {
+            url 'https://github.com/ywelsch/gradle-play2-plugin.git'
+            connection 'scm:https://github.com/ywelsch/gradle-play2-plugin.git'
+            developerConnection 'scm:git@github.com/ywelsch/gradle-play2-plugin.git'
+        }
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+        developers {
+            developer {
+                id 'ywelsch'
+                name 'Yannick Welsch'
+                email 'yannick@welsch.lu'
+            }
+        }
+    }
+}
