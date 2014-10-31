@@ -1,0 +1,83 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.ywelsch:gradle-play2-plugin:+'
+    }
+}
+
+apply plugin: 'com.github.ywelsch.play2-scala'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.typesafe.com/typesafe/releases'
+    }
+}
+
+play2 {
+    version = '2.2.2'
+    scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.10'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0'
+        classpath 'com.eriwen:gradle-css-plugin:1.11.1'
+    }
+}
+
+apply plugin: 'lesscss'
+
+def lessResources = "$buildDir/resources/lessResources"
+
+lessc {
+    sourceDir 'app/assets'
+    include '**/*.less'
+    exclude '**/_*.less'
+    destinationDir = "$lessResources/public"
+    encoding = "utf-8"
+}
+
+sourceSets.main.output.dir(lessResources, builtBy: 'lessc')
+
+apply plugin: 'css'
+
+def appCssResources = "$buildDir/resources/appCssResources"
+
+minifyCss {
+    source = file("$lessResources/public/stylesheets/main.css")
+    dest = file("$appCssResources/public/stylesheets/main.min.css")
+}
+
+tasks.minifyCss.dependsOn lessc
+
+sourceSets.main.output.dir(appCssResources, builtBy: 'minifyCss')
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-js-plugin:1.12.1'
+    }
+}
+
+apply plugin: 'com.eriwen.gradle.js'
+
+def appJSResources = "$project.buildDir/resources/appJSResources"
+
+minifyJs {
+    source = file('app/assets/javascripts/main.js')
+    dest = file("$appJSResources/public/javascripts/main.min.js")
+    sourceMap = file("$appJSResources/public/javascripts/main.sourcemap.json")
+    closure {
+        warningLevel = 'QUIET'
+    }
+}
+
+project.sourceSets.main.output.dir(appJSResources, builtBy: 'minifyJs')

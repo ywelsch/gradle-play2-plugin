@@ -1,0 +1,23 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.ywelsch:gradle-play2-plugin:+'
+    }
+}
+
+apply plugin: 'com.github.ywelsch.play2-java'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.typesafe.com/typesafe/releases'
+    }
+}
+
+play2 {
+    version = '2.2.5'
+    scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.10'
+    ebeanEnabled = true
+}

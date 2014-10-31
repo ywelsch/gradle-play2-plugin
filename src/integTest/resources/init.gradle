@@ -1,8 +1,8 @@
 gradle.rootProject { project ->
     project.buildscript {
         dependencies {
-            classpath files(new File('../../../../../build/classes/main'))
-            classpath files(new File('../../../../../build/resources/main'))
+            classpath files(new File(System.getProperty('testContextProjectDir'), 'build/classes/main'))
+            classpath files(new File(System.getProperty('testContextProjectDir'), 'build/resources/main'))
         }
         configurations.getByName('classpath').exclude group: 'com.github.ywelsch', module: 'gradle-play2-plugin'
     }

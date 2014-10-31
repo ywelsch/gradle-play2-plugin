@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.ywelsch:gradle-play2-plugin:+'
+    }
+}
+
+apply plugin: 'com.github.ywelsch.play2-java'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.typesafe.com/typesafe/releases'
+    }
+}
+
+play2 {
+    version = '2.3.1'
+    scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.11'
+}
+
+dependencies {
+    compile "com.typesafe.play:play-java-jpa_$play2.scalaVersion:$play2.version"
+    compile 'org.hibernate:hibernate-entitymanager:3.6.9.Final'
+}
+
+// hack to get hibernate to work with gradle
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+sourceSets.test.output.resourcesDir = sourceSets.test.output.classesDir

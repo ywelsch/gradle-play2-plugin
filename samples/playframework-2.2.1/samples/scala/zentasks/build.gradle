@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.ywelsch:gradle-play2-plugin:+'
+    }
+}
+
+apply plugin: 'com.github.ywelsch.play2-scala'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.typesafe.com/typesafe/releases'
+    }
+}
+
+play2 {
+    version = '2.2.1'
+    scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.10'
+}
+
+dependencies {
+    compile "com.typesafe.play:anorm_$play2.scalaVersion:$play2.version"
+    compile "com.typesafe.play:play-jdbc_$play2.scalaVersion:$play2.version"
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0'
+    }
+}
+
+apply plugin: 'lesscss'
+
+def lessResources = "$buildDir/resources/lessResources"
+
+lessc {
+    sourceDir 'app/assets'
+    include '**/*.less'
+    exclude '**/_*.less'
+    destinationDir = "$lessResources/public"
+    encoding = 'utf-8'
+}
+
+sourceSets.main.output.dir(lessResources, builtBy: 'lessc')
+
+apply plugin: 'coffeescript-base'
+
+def coffeeResources = "$buildDir/resources/coffeeResources"
+
+repositories {
+    maven {
+        url 'http://repo.gradle.org/gradle/javascript-public'
+    }
+}
+
+task compileCoffee(type: CoffeeScriptCompile) {
+    source fileTree('app/assets') {
+        include '**/*.coffee'
+    }
+    destinationDir file("$coffeeResources/public")
+}
+
+sourceSets.main.output.dir(coffeeResources, builtBy: 'compileCoffee')

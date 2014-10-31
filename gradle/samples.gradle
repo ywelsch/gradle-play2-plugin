@@ -58,17 +58,17 @@ check.dependsOn integTest
 
 ext.genTestCaseDir = file("$projectDir/src/integTest/groovy")
 
-ext.genTestCase = { projectName, lang, playVersion, scalaVersion ->
+ext.genTestCase = { projectName, lang, playVersion, scalaVersion, buildFileName ->
     def className = "$projectName-$playVersion-$scalaVersion".replaceAll('-', '_').replaceAll('\\.', '_')
-    def packageFolder = "v$playVersion/$lang/$projectName".replaceAll('-', '_').replaceAll('\\.', '_')
+    def packageFolder = "generated/v$playVersion/$lang/$projectName".replaceAll('-', '_').replaceAll('\\.', '_')
     def classFile = new File(genTestCaseDir, "$packageFolder/${className}.groovy")
     classFile.parentFile.mkdirs()
     classFile.text =
-            """package ${packageFolder.replaceAll('/', '.')}
+"""package ${packageFolder.replaceAll('/', '.')}
 
-public class $className extends com.github.ywelsch.play2.IntegrationTest {
+public class $className extends com.github.ywelsch.gradle.plugins.play2.IntegrationTest {
     public $className() {
-        super('$projectName', '$lang', '$playVersion', '$scalaVersion')
+        super('$projectName', '$lang', '$playVersion', '$scalaVersion', '$buildFileName')
     }
 }
 """
@@ -87,16 +87,20 @@ task generateTestClasses {
                     if (playVersion.startsWith('2.3.')) {
                         scalaVersions << '2.11'
                     }
+                    def lastVersion = scalaVersions.get(scalaVersions.size() - 1)
+
+                    def buildFile = file("samples/playframework-$playVersion/samples/$lang/$projectName/build.gradle")
+                    buildFile.text = genBuildFile(projectName, lang, playVersion, lastVersion, buildFile.name)
+
                     scalaVersions.each { scalaVersion ->
-                        genTestCase(projectName, lang, playVersion, scalaVersion)
                         def extension = ''
                         if (scalaVersions.size() > 1) {
-                            def lastVersion = scalaVersions.get(scalaVersions.size() - 1)
                             if (scalaVersion != lastVersion) {
                                 extension = '-' + scalaVersion
                             }
                         }
-                        file("samples/playframework-$playVersion/samples/$lang/$projectName/build${extension}.gradle").text = genBuildFile(projectName, lang, playVersion, scalaVersion)
+
+                        genTestCase(projectName, lang, playVersion, scalaVersion, buildFile.name)
                     }
                 }
             }
@@ -106,7 +110,7 @@ task generateTestClasses {
 
 compileIntegTestGroovy.dependsOn generateTestClasses
 
-ext.genBuildFile = { projectName, lang, playVersion, scalaVersion ->
+ext.genBuildFile = { projectName, lang, playVersion, scalaVersion, buildFileName ->
 
     def genericPrelude =
             """buildscript {
@@ -132,7 +136,7 @@ repositories {
             """
 play2 {
     version = '$playVersion'
-    scalaVersion = '$scalaVersion'"""
+    scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '$scalaVersion'"""
 
     if (lang == 'java' && ['computer-database', 'forms', 'zentasks'].contains(projectName)) {
         header +=
@@ -148,8 +152,6 @@ play2 {
 
     def customSettings = {
         def res = ''
-
-
 
         if (lang == 'java' && projectName == 'computer-database-jpa') {
             res +=
