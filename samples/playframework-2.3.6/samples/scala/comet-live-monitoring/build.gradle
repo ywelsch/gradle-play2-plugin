@@ -58,26 +58,13 @@ tasks.minifyCss.dependsOn lessc
 
 sourceSets.main.output.dir(appCssResources, builtBy: 'minifyCss')
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.12.1'
-    }
-}
-
-apply plugin: 'com.eriwen.gradle.js'
-
 def appJSResources = "$project.buildDir/resources/appJSResources"
 
-minifyJs {
-    source = file('app/assets/javascripts/main.js')
-    dest = file("$appJSResources/public/javascripts/main.min.js")
-    sourceMap = file("$appJSResources/public/javascripts/main.sourcemap.json")
-    closure {
-        warningLevel = 'QUIET'
+project.tasks.create('copyAppJSResources', Sync) {
+    from fileTree('app/assets') {
+        include '**/*.js'
     }
+    into "$appJSResources/public"
 }
 
-project.sourceSets.main.output.dir(appJSResources, builtBy: 'minifyJs')
+project.sourceSets.main.output.dir(appJSResources, builtBy: 'copyAppJSResources')

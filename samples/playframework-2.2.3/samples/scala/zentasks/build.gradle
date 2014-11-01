@@ -21,6 +21,8 @@ play2 {
     scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.10'
 }
 
+run.systemProperty 'applyEvolutions.default', true
+
 dependencies {
     compile "com.typesafe.play:anorm_$play2.scalaVersion:$play2.version"
     compile "com.typesafe.play:play-jdbc_$play2.scalaVersion:$play2.version"

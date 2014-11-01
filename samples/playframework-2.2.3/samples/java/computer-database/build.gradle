@@ -21,3 +21,5 @@ play2 {
     scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.10'
     ebeanEnabled = true
 }
+
+run.systemProperty 'applyEvolutions.default', true

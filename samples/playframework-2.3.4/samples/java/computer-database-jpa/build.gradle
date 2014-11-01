@@ -21,6 +21,8 @@ play2 {
     scalaVersion = project.hasProperty('scalaVersion') ? project.scalaVersion : '2.11'
 }
 
+run.systemProperty 'applyEvolutions.default', true
+
 dependencies {
     compile "com.typesafe.play:play-java-jpa_$play2.scalaVersion:$play2.version"
     compile 'org.hibernate:hibernate-entitymanager:3.6.9.Final'
