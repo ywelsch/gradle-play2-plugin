@@ -58,7 +58,7 @@ check.dependsOn integTest
 
 ext.genTestCaseDir = file("$projectDir/src/integTest/groovy")
 
-ext.genTestCase = { projectName, lang, playVersion, scalaVersion, buildFileName ->
+ext.genTestCase = { projectName, lang, playVersion, scalaVersion, buildFile ->
     def className = "$projectName-$playVersion-$scalaVersion".replaceAll('-', '_').replaceAll('\\.', '_')
     def packageFolder = "generated/v$playVersion/$lang/$projectName".replaceAll('-', '_').replaceAll('\\.', '_')
     def classFile = new File(genTestCaseDir, "$packageFolder/${className}.groovy")
@@ -68,7 +68,7 @@ ext.genTestCase = { projectName, lang, playVersion, scalaVersion, buildFileName 
 
 public class $className extends com.github.ywelsch.gradle.plugins.play2.IntegrationTest {
     public $className() {
-        super('$projectName', '$lang', '$playVersion', '$scalaVersion', '$buildFileName')
+        super('$projectName', '$lang', '$playVersion', '$scalaVersion', '$buildFile.name')
     }
 }
 """
@@ -90,7 +90,7 @@ task generateTestClasses {
                     def lastVersion = scalaVersions.get(scalaVersions.size() - 1)
 
                     def buildFile = file("samples/playframework-$playVersion/samples/$lang/$projectName/build.gradle")
-                    buildFile.text = genBuildFile(projectName, lang, playVersion, lastVersion, buildFile.name)
+                    buildFile.text = genBuildFile(projectName, lang, playVersion, lastVersion, buildFile)
 
                     scalaVersions.each { scalaVersion ->
                         def extension = ''
@@ -100,7 +100,7 @@ task generateTestClasses {
                             }
                         }
 
-                        genTestCase(projectName, lang, playVersion, scalaVersion, buildFile.name)
+                        genTestCase(projectName, lang, playVersion, scalaVersion, buildFile)
                     }
                 }
             }
@@ -110,7 +110,49 @@ task generateTestClasses {
 
 compileIntegTestGroovy.dependsOn generateTestClasses
 
-ext.genBuildFile = { projectName, lang, playVersion, scalaVersion, buildFileName ->
+
+task samples(type: GradleBuild, dependsOn: classes) {
+    doFirst {
+        if (project.hasProperty('dir')) {
+            dir = project.dir
+        } else {
+            ant.fail('Property -Pdir=... missing')
+        }
+        if (project.hasProperty('gradleTasks')) {
+            tasks = project.gradleTasks.split(',')
+        } else {
+            ant.fail('Property -PgradleTasks=... missing')
+        }
+        startParameter.addInitScript(file('src/integTest/resources/init.gradle'))
+        startParameter.searchUpwards = false
+        startParameter.gradleUserHomeDir = file('samplesGradleHome')
+        startParameter.systemPropertiesArgs.put('testContextProjectDir', projectDir.absolutePath)
+        project.gradle.startParameter.projectProperties.each { key, val ->
+            if (key.startsWith('pass.')) {
+                startParameter.projectProperties.put(key.substring('pass.'.length()), val)
+            }
+        }
+        project.gradle.startParameter.systemPropertiesArgs.each { key, val ->
+            if (key.startsWith('pass.')) {
+                startParameter.systemPropertiesArgs.put(key.substring('pass.'.length()), val)
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ext.genBuildFile = { projectName, lang, playVersion, scalaVersion, buildFile ->
 
     def genericPrelude =
             """buildscript {
@@ -152,6 +194,12 @@ play2 {
 
     def customSettings = {
         def res = ''
+
+        if (new File(buildFile.parentFile, 'conf/evolutions').exists()) {
+            res += '''
+run.systemProperty 'applyEvolutions.default', true
+'''
+        }
 
         if (lang == 'java' && projectName == 'computer-database-jpa') {
             res +=
@@ -321,7 +369,12 @@ sourceSets.main.output.dir(appCssResources, builtBy: 'minifyCss')
         }
 
         if (projectName == 'comet-live-monitoring') {
-            res+= applyLessMin + applyMinJS
+            res+= applyLessMin
+            if (playVersion.startsWith('2.2.')) {
+                res+= applyMinJS
+            } else {
+                res+= applyJS
+            }
         }
 
         res

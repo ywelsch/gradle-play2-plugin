@@ -1,8 +1,13 @@
 gradle.rootProject { project ->
     project.buildscript {
         dependencies {
-            classpath files(new File(System.getProperty('testContextProjectDir'), 'build/classes/main'))
-            classpath files(new File(System.getProperty('testContextProjectDir'), 'build/resources/main'))
+            def testContextProjectProperty = System.getProperty('testContextProjectDir')
+            if (testContextProjectProperty == null) {
+                throw new RuntimeException('System property \'testContextProjectProperty\' not set')
+            }
+            def testContextProjectDir = new File(testContextProjectProperty)
+            classpath files(new File(testContextProjectDir, 'build/classes/main'))
+            classpath files(new File(testContextProjectDir, 'build/resources/main'))
         }
         configurations.getByName('classpath').exclude group: 'com.github.ywelsch', module: 'gradle-play2-plugin'
     }

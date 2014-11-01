@@ -30,6 +30,8 @@ abstract class IntegrationTest {
     public void cleanUp() {
         new File(projectDir, 'build').deleteDir()
         new File(projectDir, '.gradle').deleteDir()
+        new File(projectDir, 'logs').deleteDir()
+        new File(projectDir, 'target').deleteDir()
     }
 
     def initFile = new File('src/integTest/resources/init.gradle')
