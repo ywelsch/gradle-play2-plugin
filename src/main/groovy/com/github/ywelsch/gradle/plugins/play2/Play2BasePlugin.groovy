@@ -12,6 +12,7 @@ import org.gradle.api.tasks.scala.ScalaCompile
 import com.github.ywelsch.gradle.plugins.play2.tasks.PlayCompileRoutes
 import com.github.ywelsch.gradle.plugins.play2.tasks.PlayCompileTemplates
 import com.github.ywelsch.gradle.plugins.play2.tasks.PlayEnhanceClasses
+import org.gradle.api.tasks.testing.Test
 
 abstract class Play2BasePlugin implements Plugin<Project> {
     static final String COMPILE_TEMPLATES_CONFIGURATION_NAME = 'play2Templates'
@@ -265,6 +266,12 @@ abstract class Play2BasePlugin implements Plugin<Project> {
         }
 
         project.sourceSets.main.output.dir(publicResources, builtBy: 'copyPublicResources')
+
+        if (mode == ProjectMode.SCALA) {
+            project.tasks.withType(Test) {
+                systemProperty 'specs2.outDir', "$project.reportsDir/specs-report"
+            }
+        }
     }
 
 }
