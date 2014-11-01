@@ -2,3 +2,4 @@
 build
 .gradle
 samplesGradleHome
+/src/integTest/groovy/generated
