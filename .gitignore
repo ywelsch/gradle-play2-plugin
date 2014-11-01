@@ -3,3 +3,4 @@ build
 .gradle
 samplesGradleHome
 /src/integTest/groovy/generated
+gradle-play2-plugin.iml

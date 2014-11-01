@@ -1,4 +1,5 @@
 apply plugin: 'groovy'
+apply plugin: 'idea'
 apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/samples.gradle'
 
