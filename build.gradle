@@ -1,5 +1,9 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
+
+group = 'com.github.ywelsch'
+version = '0.1'
+
 apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/samples.gradle'
 
@@ -10,12 +14,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.0'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.1.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.6'
     }
 }
-
-group = 'com.github.ywelsch'
-version = '0.1-SNAPSHOT'
 
 wrapper {
     gradleVersion = '2.1'

@@ -54,8 +54,6 @@ task integTest(type: Test) {
     forkEvery = 1
 }
 
-check.dependsOn integTest
-
 ext.genTestCaseDir = file("$projectDir/src/integTest/groovy")
 
 ext.genTestCase = { projectName, lang, playVersion, scalaVersion, buildFile ->

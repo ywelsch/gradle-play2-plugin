@@ -1,15 +1,19 @@
 apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'com.jfrog.bintray'
 
+
+def gitUrl = 'https://github.com/ywelsch/gradle-play2-plugin'
 
 modifyPom {
     project {
-        name 'gradle-play2-plugin'
-        description 'This is a gradle plugin to build play2 projects.'
+        name 'Gradle Play 2 plugin'
+        packaging 'jar'
+        description 'Gradle plugin to build Play 2 projects.'
         url 'https://github.com/ywelsch/gradle-play2-plugin'
         inceptionYear '2014'
         scm {
-            url 'https://github.com/ywelsch/gradle-play2-plugin.git'
-            connection 'scm:https://github.com/ywelsch/gradle-play2-plugin.git'
+            url gitUrl
+            connection "scm:${gitUrl}.git"
             developerConnection 'scm:git@github.com/ywelsch/gradle-play2-plugin.git'
         }
         licenses {
@@ -25,6 +29,40 @@ modifyPom {
                 name 'Yannick Welsch'
                 email 'yannick@welsch.lu'
             }
+        }
+    }
+}
+
+extraArchive {
+    sources = true
+    tests = false
+    javadoc = true
+}
+
+nexus {
+    sign = true
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? bintrayUser : null
+    key = project.hasProperty('bintrayApiKey') ? bintrayApiKey : null
+    configurations = ['archives']
+    dryRun = false
+    publish = !project.version.endsWith('-SNAPSHOT')
+    pkg {
+        repo = 'maven'
+        name = "${project.name}"
+        desc = 'Gradle plugin to build Play 2 projects.'
+        websiteUrl = gitUrl
+        issueTrackerUrl = "$gitUrl/issues"
+        vcsUrl = "${gitUrl}.git"
+        licenses = ['Apache-2.0']
+        labels = ['gradle', 'play2', 'plugin']
+        publicDownloadNumbers = true
+
+        version {
+            vcsTag = "v${project.version}"
+            attributes = ['gradle-plugin': "${project.group}.play2-plugin:${project.group}:${project.name}"]
         }
     }
 }
