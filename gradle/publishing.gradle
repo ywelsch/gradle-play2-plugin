@@ -63,6 +63,11 @@ bintray {
         version {
             vcsTag = "v${project.version}"
             attributes = ['gradle-plugin': "${project.group}.play2-plugin:${project.group}:${project.name}"]
+
+            gpg {
+                sign = true
+                passphrase = project.hasProperty('gpgPassphrase') ? bintrayApiKey : null
+            }
         }
     }
 }

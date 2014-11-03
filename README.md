@@ -7,23 +7,16 @@ Currently supported Play versions: [2.2.0 - 2.3.6]
 
 Example Play 2 projects using the gradle plugin can be found [in the samples directory](samples)
 
-*The plugin will be published on Maven Central very soon.*
-
 ## Scope
 
 This gradle plugin provides the core functionality to develop Play 2 applications.
-It includes routes and template compiler, class enhancer for getters and settes and ebean, and a fully-configured lifecycle.
+It includes routes and template compiler, class enhancer for getters and setters and ebean, and a fully-configured lifecycle.
 It does not include, however, support for compiling LESS files, minifying JS files or other non-Play specific functionality.
 Examples of integrating other Gradle plugins for that goal can be found in the samples directory, for example the [zentasks example](samples/playframework-2.3.6/samples/scala/zentasks/build.gradle).
 
 ## Running examples
 
 All examples from the Play 2 distribution are fully running.
-As long as the gradle-play2-plugin is not published on Maven Central, the examples can be run from the root project directory of the plugin as follows:
-
-    gradlew samples -Pdir=samples/playframework-2.3.6/samples/scala/zentasks -PgradleTasks=run
-
-This calls the run task on the zentasks example.
 
 ## Using the plugin
 
@@ -139,3 +132,11 @@ The gradle-play2-plugin provides a number of tasks:
         ebeanClasspath = configurations.ebean
     }
 
+## For Plugin Developers
+
+Integration tests are running the tests of all the provided samples.
+To test an example directly using the plugin sources, it can be run from the root project directory of the plugin as follows:
+
+    gradlew samples -Pdir=samples/playframework-2.3.6/samples/scala/zentasks -PgradleTasks=run
+
+This calls the run task on the zentasks example.
