@@ -1,3 +1,6 @@
+**This plugin is OUTDATED: Gradle has built-in Play support nowadays.**
+
+
 gradle-play2-plugin
 ===================
 
